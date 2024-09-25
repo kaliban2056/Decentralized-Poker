@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kaliban2056/Decentralized-Poker/p2p"
+	"github.com/kaliban2056/Decentralized-poker/p2p"
 )
 
 func main() {
@@ -11,11 +11,10 @@ func main() {
 	server := p2p.NewServer(cfg)
 
 	server.Start()
-	// rand.New(rand.NewSource(time.Now().UnixNano()))
-	//
-	//	for j := 0; j < 10; j++ {
-	//		d := deck.New()
-	//		fmt.Println(d)
-	//		fmt.Println()
-	//	}
+
+	//rand.NewSource(time.Now().UnixNano())
+
+	//d := deck.New()
+
+	//fmt.Println(d)
 }

@@ -19,7 +19,7 @@ func (s Suit) String() string {
 	case Clubs:
 		return "CLUBS"
 	default:
-		panic("invalid card suit")
+		panic("Invalid card suit")
 	}
 }
 
@@ -31,27 +31,33 @@ const (
 )
 
 type Card struct {
-	suit  Suit
-	value int
+	Suit  Suit
+	Value int
 }
 
 func (c Card) String() string {
-	value := strconv.Itoa(c.value)
-	if c.value == 1 {
+	value := strconv.Itoa(c.Value)
+	if c.Value == 1 {
 		value = "ACE"
+	} else if c.Value == 11 {
+		value = "JACK"
+	} else if c.Value == 12 {
+		value = "QUEEN"
+	} else if c.Value == 13 {
+		value = "KING"
 	}
 
-	return fmt.Sprintf("%s of %s %s", value, c.suit, suitToUnicode(c.suit))
+	return fmt.Sprintf("%s of %s %s", value, c.Suit, suitToUnicode(c.Suit))
 }
 
 func NewCard(s Suit, v int) Card {
 	if v > 13 {
-		panic("the value of the card cannot be higher than 13")
+		panic("The value of the card cannot be higher than 13")
 	}
 
 	return Card{
-		suit:  s,
-		value: v,
+		Suit:  s,
+		Value: v,
 	}
 }
 
@@ -71,10 +77,11 @@ func New() Deck {
 			x++
 		}
 	}
-	return Shuffle(d)
+
+	return shuffle(d)
 }
 
-func Shuffle(d Deck) Deck {
+func shuffle(d Deck) Deck {
 	for i := 0; i < len(d); i++ {
 		r := rand.Intn(i + 1)
 
@@ -96,6 +103,6 @@ func suitToUnicode(s Suit) string {
 	case Clubs:
 		return "♣"
 	default:
-		panic("invalid card suit")
+		panic("Invalid card suit")
 	}
 }
