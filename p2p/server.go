@@ -6,11 +6,13 @@ import (
 	"sync"
 )
 
-type TCPTransport struct {
-}
-
 type Peer struct {
 	conn net.Conn
+}
+
+func (p *Peer) send(b []byte) error {
+	_, err := p.conn.Write(b)
+	return err
 }
 
 type ServerConfig struct {
@@ -40,8 +42,26 @@ func (s *Server) Start() {
 	if err := s.listen(); err != nil {
 		panic(err)
 	}
+	fmt.Printf("game server running on port %s\n", s.ListenAddr)
 
-	go s.acceptLoop()
+	s.acceptLoop()
+}
+
+func (s *Server) acceptLoop() {
+	for {
+		conn, err := s.listener.Accept()
+		if err != nil {
+			panic(err)
+		}
+
+		peer := &Peer{
+			conn: conn,
+		}
+
+		s.addPeer <- peer
+
+		go s.handleConn(conn)
+	}
 }
 
 func (s *Server) handleConn(conn net.Conn) {
@@ -53,17 +73,6 @@ func (s *Server) handleConn(conn net.Conn) {
 		}
 
 		fmt.Println(string(buf[:n]))
-	}
-}
-
-func (s *Server) acceptLoop() {
-	for {
-		conn, err := s.listener.Accept()
-		if err != nil {
-			panic(err)
-		}
-
-		go s.handleConn(conn)
 	}
 }
 
@@ -83,7 +92,8 @@ func (s *Server) loop() {
 		select {
 		case peer := <-s.addPeer:
 			s.peers[peer.conn.RemoteAddr()] = peer
-			fmt.Printf("new player connected %s", peer.conn.RemoteAddr())
+
+			fmt.Printf("new player connected %s\n", peer.conn.RemoteAddr())
 		}
 	}
 }
